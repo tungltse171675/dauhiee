@@ -1,1 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Vũ Uyên Nhi</title>
+    <link rel="Shortcut Icon" href="dau.png" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: "Helvetica Neue", "Segoe UI", sans-serif;
+            text-align: center;
+            background-color: #000;
+            transition: background-color 1.5s ease;
+        }
+
+        #startBtn {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 18px 40px;
+            font-size: 28px;
+            font-weight: bold;
+            background: #ff7fae;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 126, 170, 0.8);
+            z-index: 9999;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        #startBtn.fadeOut {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.85);
+            pointer-events: none;
+        }
+
+        .slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        .slideshow img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            filter: blur(8px);
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .slideshow img.active {
+            opacity: 0.25;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            top: 42%;
+            transform: translateY(-50%);
+            color: #fff;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        .typewriter {
+            font-size: 70px;
+            font-style: italic;
+            font-weight: 500;
+            white-space: pre-wrap;
+            text-shadow: 0 0 15px rgba(255,255,255,0.5);
+            transition: opacity 0.4s ease, color 1s ease;
+            opacity: 0;
+            color: #ff7fae;
+            margin-bottom: 25px;
+        }
+
+        #logo {
+            width: 95px;
+            height: 95px;
+            border-radius: 200px;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
+            border: 2px solid #fff;
+            margin-top: 100px;
+            transition: transform 0.1s linear;
+            opacity: 0;
+        }
+
+        .floating-word {
+    position: fixed;
+    color: #fce2ea;
+    font-size: 28px;
+    font-weight: bold;
+    opacity: 0;
+    pointer-events: none;
+    animation: floatUp 3s ease-out forwards;
+    text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    z-index: 1; /* ⭐ THAY 999 thành 1 */
+}
+
+       #blackOverlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 99999;
+    transition: opacity 3s ease;
+}
+
+#blackOverlay.show {
+    opacity: 1;
+}
+
+
+#blackOverlay.show #finalText {
+    opacity: 1;
+}
+
+@media (max-width: 600px) {
+    #finalText {
+        font-size: 20px;
+    }
+}
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(30px) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120px) rotate(25deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .typewriter { font-size: 32px; }
+            #logo { width: 75px; height: 75px; }
+        }
+    </style>
+</head>
+<div id="blackOverlay">
+</div>
+
+<body>
+
+<button id="startBtn">Vô nè</button>
+
+<div class="slideshow" id="slideshow">
+    <img src="dau1.jfif" class="active">
+    <img src="dau2.png">
+    <img src="dau3.jfif">
+    <img src="dau4.jfif">
+    <img src="dau5.jfif">
+</div>
+
+<div class="container">
+    <div class="typewriter" id="typewriter"></div>
+    <img id="logo" src="dau.png" alt="Logo">
+</div>
+
+<!-- AUDIO -->
+<audio id="audio"></audio>
+
+<script>
+
+    /* ===== PLAYLIST AUDIO ===== */
+    const audio = document.getElementById("audio");
+
+    const playlist = ["nhac.mp3", "nhac2.mp3"];
+    let currentTrack = 0;
+
+    function playTrack(index) {
+        audio.src = playlist[index];
+        audio.play();
+    }
+
+    audio.addEventListener("ended", () => {
+        currentTrack++;
+
+        if (currentTrack >= playlist.length) {
+            currentTrack = 0; // quay lại bài đầu
+        }
+
+        playTrack(currentTrack);
+    });
+
+    const logo = document.getElementById("logo");
+    const slides = document.querySelectorAll('.slideshow img');
+    let current = 0;
+
+    function changeSlide() {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+    }
+
+    const messages = [
+         { text: "Hello Princess 🍓", time: 4500 },
+         { text: "Cố gắng xem và đọc hết nha.", time: 4500 },
+         { text: "...", time: 3000 },
+         { text: "Dâu này", time: 4500 },
+        { text: "Thật sự là…", time: 4500 },
+         { text:"Tao chuẩn bị đi rồi", time: 4500 },
+         { text:"Và trước khi đi…", time: 4500 },
+         { text:"Tao không muốn giữ trong lòng một điều tiếc nuối gì nữa.", time: 4500 },
+         { text:"Có thể là mày sẽ bất ngờ khi đọc khi xem những lời này", time: 4500 },
+         { text:"Nhưng mà cũng phải tới lúc để nói ra thôi", time: 4500 },
+         { text:"Thật sự tao muốn nói trực tiếp hơn",  time: 4500 },
+         { text:"Nhưng mà chắc không đủ can đảm.", time: 4500 },
+         { text:"Không bây giờ thì chắc cũng chả còn cơ hội nào để có thể nói nữa", time: 4500 },
+        { text:"...", time: 3000 },
+        { text:"Tao luôn nói với mày và mọi người là không muốn có người yêu", time: 4500 },
+        { text:"Nhưng thật ra không phải", time: 4500 },
+        { text:"Đơn giản chỉ là tao có tình cảm với mày nên mới nói tránh như vậy", time: 4500 },
+        { text:"Đối với tao, mày luôn có một sự ưu tiên", time: 4500 },
+        { text:"Mày là động lực để tao cố gắng và thay đổi rất nhiều", time: 4500 },
+        { text:"Tao đã cố gắng không để cho mày biết vì tao sợ", time: 4500 },
+        { text:"Sợ mày biết rồi thì tụi mình không còn thân được với nhau nữa", time: 4500 },
+        { text:"Tao không còn được thể hiện ra những thứ mà tao muốn làm nữa", time: 4500 },
+        { text:"Tuy là những điều mà tao đã làm có thể là chưa đủ để mày cảm nhận được", time: 4500 },
+        { text:"Hoặc là do đã làm bạn bè quá lâu rồi để mày có thể cảm nhận được những điều đó.", time: 4500 },
+        { text:"Tao biết là mày không muốn có tình cảm giữa bạn bè với nhau", time: 4500 },
+        { text:"Nên đôi khi nhiều thứ không nên nói ra là điều an toàn nhất.", time: 4500 },
+      { text:  "Tao không mong hay hy vọng điều gì hoặc nhận lại điều gì", time: 4500 },
+       { text: "Càng không muốn làm mày khó xử.", time: 4500 },
+       { text: "Tao chỉ muốn mày biết là tao có tình cảm với mày", time: 4500 },
+       { text: "Và từ đó tới giờ tao đối xử tốt với mày là xuất phát từ tình cảm của tao chứ không phải vì điều gì cả.", time: 4500 },
+      { text:  "Được gần, được nói chuyện, chia sẻ, quan tâm hay là mua cho cái này cái kia như vậy", time: 4500 },
+       { text: "Dám làm, dám cho những thứ mà trước đây tao không dám như vậy", time: 4500 },
+       { text: "Và miễn là không thấy mày buồn hay khóc vì điều gì", time: 4500 },
+       { text: "Thì tao cũng cảm thấy vui rồi không mong đợi điều gì hơn nữa cả.", time: 4500 },
+       { text: "Nói chung là chỉ muốn nói ra như vậy thôi.", time: 4500 },
+      { text:  "Chúc Bí Nhe luôn luôn vui vẻ, cố gắng kiếm thật nhiều tiền, tìm được và ổn định trong công việc",  time: 5500 },
+       { text: "Hạnh phúc với những gì mình đang có, đang nhận được và sắp nhận được", time: 5500 },
+       { text: "Vì mày xứng đáng với những điều đó.", time: 4500 },
+       { text: "Xinh đẹp như vậy", time: 2000 },
+       { text: "Chăm chỉ như vậy", time: 2000 },
+       { text: "Giỏi giang như vậy", time: 2000 },
+       { text: "Thì mọi điều đều xứng đáng.", time: 4500 },
+       { text: "🍓Nhi Dâuuuu siu giỏiiiiii…🍓", time: 6000 },
+    ];
+
+    const typewriter = document.getElementById("typewriter");
+    const container = document.querySelector(".container");
+    const startBtn = document.getElementById("startBtn");
+
+    let index = 0;
+    const showTime = 4500;
+    const fadeTime = 2000;
+
+
+   const blackOverlay = document.getElementById("blackOverlay");
+
+function showMessage() {
+    typewriter.style.opacity = 0;
+    typewriter.textContent = "";
+
+    const current = messages[index];
+
+    setTimeout(() => {
+        typewriter.innerHTML = `<b>${current.text}</b>`;
+        typewriter.style.opacity = 1;
+
+        if (index === 3) {
+            document.body.style.backgroundColor = "#f09aa7";
+            document.getElementById("slideshow").style.opacity = 1;
+            typewriter.style.color = "#181616";
+        }
+
+        setTimeout(() => {
+            if (index < messages.length - 1) {
+                typewriter.style.opacity = 0;
+                setTimeout(() => {
+                    index++;
+                    showMessage();
+                }, fadeTime);
+            } else {
+                setTimeout(() => {
+                    blackOverlay.classList.add("show");
+                }, 3000);
+            }
+        }, current.time);
+
+    }, 200);
+}
+
+
+
+    startBtn.addEventListener("click", () => {
+        startBtn.classList.add("fadeOut");
+
+        setTimeout(() => {
+            startBtn.style.display = "none";
+
+            playTrack(0); // chạy bài đầu playlist
+
+            container.style.opacity = 1;
+            logo.style.opacity = 1;
+
+            startBeat();
+            showMessage();
+
+            setInterval(changeSlide, 4000);
+            setInterval(spawnWord, 3000);
+
+        }, 900);
+    });
+
+    let audioCtx, analyser, dataArray;
+
+    function startBeat() {
+        audioCtx = new AudioContext();
+        const source = audioCtx.createMediaElementSource(audio);
+
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+
+        beatLoop();
+    }
+
+    function beatLoop() {
+        requestAnimationFrame(beatLoop);
+
+        analyser.getByteFrequencyData(dataArray);
+        let bass = dataArray[2];
+
+        let scale = 1 + bass / 180;
+
+        logo.style.transform = `scale(${scale})`;
+    }
+
+   const randomWords = ["dauhiee", "bedaune", "cosy", "bí nhe", "nhi dâu", "bấu de"];
+
+/* ===== RANDOM WORDS NHÓM 4-5 CHỮ ===== */
+function spawnWordGroup() {
+    const pickedWord = randomWords[Math.floor(Math.random() * randomWords.length)];
+    const count = Math.floor(Math.random() * 2) + 10; // 4 hoặc 5 chữ
+
+    for (let i = 0; i < count; i++) {
+        spawnWord(pickedWord);
+    }
+}
+
+function spawnWord(text) {
+    const word = document.createElement("div");
+    word.className = "floating-word";
+    word.textContent = text;
+
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight;
+    const tilt = (Math.random() * 60) - 30;
+
+    word.style.left = `${x}px`;
+    word.style.top = `${y}px`;
+    word.style.transform = `rotate(${tilt}deg)`;
+
+    document.body.appendChild(word);
+
+    setTimeout(() => word.remove(), 3000);
+}
+
+/* ===== GỌI MỖI 3 GIÂY ===== */
+setInterval(spawnWordGroup, 3000);
+
+
+</script>
+</body>
+</html>
